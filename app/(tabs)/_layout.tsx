@@ -7,38 +7,47 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        // Configure tab bar style
         tabBarStyle: {
           height: Platform.OS === 'ios' ? 88 : 60,
           paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-          backgroundColor: 'white',
-          borderTopWidth: 1,
-          borderTopColor: '#e2e2e2',
+          backgroundColor: '#8B4513', // Brown color for western theme
+          borderTopWidth: 0,
         },
-        // Configure tab appearance
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#8E8E93',
-        // Hide the header
-        headerShown: false,
+        tabBarActiveTintColor: '#FFD700', // Gold color for active tab
+        tabBarInactiveTintColor: '#DEB887', // Light brown for inactive
+        headerStyle: {
+          backgroundColor: '#8B4513',
+        },
+        headerTintColor: '#FFF',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Ionicons name="home" size={24} color={color} />
           ),
-          tabBarLabel: 'Home'
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="wanted"
         options={{
-          title: 'Search',
+          title: 'Wanted',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search" size={size} color={color} />
+            <Ionicons name="document-text" size={24} color={color} />
           ),
-          tabBarLabel: 'Search'
+        }}
+      />
+      <Tabs.Screen
+        name="post-bounty"
+        options={{
+          title: 'Post Bounty',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="add-circle" size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -46,9 +55,8 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Ionicons name="person" size={24} color={color} />
           ),
-          tabBarLabel: 'Profile'
         }}
       />
     </Tabs>
