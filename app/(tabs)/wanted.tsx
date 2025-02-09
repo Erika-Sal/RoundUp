@@ -5,7 +5,6 @@ import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-na
 import { useFonts, Rye_400Regular } from '@expo-google-fonts/rye';
 import { getBounties, BountyData } from './firebase';
 import { useFocusEffect } from '@react-navigation/native';
-
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import MessagingScreen from './messaging';
@@ -133,21 +132,20 @@ function WantedList({ navigation }: { navigation: NativeStackNavigationProp<Root
         <View style={styles.cardContent}>
           <Text style={styles.titleText}>{item.title}</Text>
 
-          <View style={styles.detailRow}>
-            <MapPin size={16} color="#8B4513" />
-            <Text style={styles.locationText}>{item.location}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Clock size={16} color="#8B4513" />
-            <Text style={styles.timeText}>{item.posted}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <ShieldCheck size={16} color="#FFD700" />
-            <Text style={styles.sheriffText}>{item.sheriff}</Text>
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.descriptionLabel}>Description:</Text>
+            <Text style={styles.descriptionText}>{item.description || 'No description provided'}</Text>
           </View>
 
-          <View style={styles.typeBadge}>
-            <Text style={styles.typeText}>{item.type}</Text>
+          <View style={styles.cardFooter}>
+            <View style={styles.sheriffBadge}>
+              <ShieldCheck size={16} color="#FFD700" />
+              <Text style={styles.sheriffText}>{item.sheriff}</Text>
+            </View>
+
+            <View style={styles.typeBadge}>
+              <Text style={styles.typeText}>{item.type}</Text>
+            </View>
           </View>
         </View>
 
@@ -169,7 +167,7 @@ function WantedList({ navigation }: { navigation: NativeStackNavigationProp<Root
 
   if (!fontsLoaded || isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.loader}>
         <ActivityIndicator size="large" color="#8B4513" />
       </View>
     );
@@ -217,7 +215,7 @@ export default function WantedListScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
+  loader: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -275,6 +273,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: Dimensions.get('window').width / 2 - 24,
     marginBottom: 16,
+    marginRight: 10,
   },
   urgencyBadge: {
     position: 'absolute',
@@ -312,10 +311,50 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   cardContent: {
-    gap: 8,
     backgroundColor: 'rgba(255, 248, 220, 0.95)',
     borderRadius: 8,
+    padding: 16,
+    gap: 12,
+  },
+  descriptionContainer: {
+    backgroundColor: 'rgba(139, 69, 19, 0.05)',
+    borderRadius: 8,
     padding: 12,
+    minHeight: 60,
+  },
+  descriptionLabel: {
+    fontSize: 14,
+    color: '#8B4513',
+    fontWeight: '700',
+    marginBottom: 4,
+    fontFamily: 'Rye',
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: '#594433',
+    fontWeight: '500',
+    lineHeight: 20,
+    letterSpacing: 0.3,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  sheriffBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 16,
+    gap: 6,
+  },
+  sheriffText: {
+    fontSize: 13,
+    color: '#8B4513',
+    fontWeight: '600',
   },
   titleText: {
     fontSize: 18,
@@ -324,28 +363,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: 'Rye',
     textAlign: 'center',
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  locationText: {
-    fontSize: 14,
-    color: '#594433',
-    fontWeight: '600',
-    fontFamily: 'System',
-    letterSpacing: 0.5,
-  },
-  timeText: {
-    fontSize: 12,
-    color: '#666',
-    fontStyle: 'italic',
-  },
-  sheriffText: {
-    fontSize: 13,
-    color: '#8B4513',
-    fontWeight: '500',
   },
   typeBadge: {
     backgroundColor: '#8B4513',
