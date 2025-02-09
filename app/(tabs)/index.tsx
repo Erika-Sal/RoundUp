@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ImageBackground } from 'react-native';
-import { CircleDollarSign, Users, TrendingUp, ArrowRight } from 'lucide-react-native';
+import { CircleDollarSign, Users, TrendingUp, ArrowRight, LucideIcon } from 'lucide-react-native';
 
 interface FeatureCardProps {
   icon: LucideIcon;

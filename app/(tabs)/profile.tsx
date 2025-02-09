@@ -40,15 +40,15 @@ export default function SheriffProfile() {
             </View>
           </View>
 
-          {/* Right - Stats */}
+          {/* Right - Stacked Wide Stats */}
           <View style={styles.statsContainer}>
             <View style={styles.statBox}>
-              <Users size={40} color="#8B4513" />
+              <Users size={45} color="#8B4513" />
               <Text style={styles.statValue}>10</Text>
               <Text style={styles.statLabel}>Helped</Text>
             </View>
             <View style={styles.statBox}>
-              <Clock size={40} color="#8B4513" />
+              <Clock size={45} color="#8B4513" />
               <Text style={styles.statValue}>15</Text>
               <Text style={styles.statLabel}>Hours</Text>
             </View>
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(139, 69, 19, 0.2)',
   },
   header: {
-    padding: 25,
+    padding: 30,
     backgroundColor: '#8B4513',
     alignItems: 'center',
     borderBottomWidth: 6,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontFamily: 'Rye',
     color: '#FFF8DC',
-    fontSize: 40,
+    fontSize: 42,
     textShadowColor: '#000',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 5,
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   profileContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     padding: 40,
     marginTop: 30,
   },
@@ -95,13 +95,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatarContainer: {
-    width: 200,
-    height: 200,
+    width: 220,
+    height: 220,
     backgroundColor: '#8B4513',
-    borderRadius: 100,
+    borderRadius: 110,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 5,
+    borderWidth: 6,
     borderColor: '#FFF8DC',
     shadowColor: '#000',
     shadowOffset: { width: 3, height: 3 },
@@ -110,9 +110,9 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   avatarPlaceholder: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
+    width: 190,
+    height: 190,
+    borderRadius: 95,
     backgroundColor: 'black',
   },
   userInfo: {
@@ -121,41 +121,44 @@ const styles = StyleSheet.create({
   },
   username: {
     fontFamily: 'Rye',
-    fontSize: 28,
+    fontSize: 30,
     color: '#8B4513',
   },
   trustedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#8B4513',
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginTop: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 22,
+    marginTop: 12,
     shadowColor: '#000',
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 0.3,
     elevation: 6,
   },
   trustedText: {
-    fontSize: 18,
+    fontSize: 20,
     color: '#FFF8DC',
     fontWeight: '700',
     marginLeft: 8,
   },
   statsContainer: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    flexDirection: 'column', // Stacks the boxes vertically
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 25,
   },
   statBox: {
     backgroundColor: 'rgba(255, 248, 220, 0.95)',
-    borderRadius: 18,
-    padding: 24,
+    borderRadius: 20,
+    padding: 30,
     alignItems: 'center',
-    borderWidth: 4,
+    borderWidth: 5,
     borderColor: '#8B4513',
-    width: 160,
+    width: '100%', // Makes it as wide as possible
+    maxWidth: 300, // Ensures it doesn't become too large on bigger screens
     shadowColor: '#000',
     shadowOffset: { width: 3, height: 4 },
     shadowOpacity: 0.4,
@@ -163,12 +166,12 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontFamily: 'Rye',
-    fontSize: 32,
+    fontSize: 34,
     color: '#8B4513',
     marginTop: 8,
   },
   statLabel: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#594433',
     fontWeight: '700',
     textAlign: 'center',

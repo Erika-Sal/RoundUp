@@ -57,20 +57,15 @@ export default function WantedListScreen() {
   };
 
   const AnimatedButton = ({ children, onPress }) => {
-    const scale = useSharedValue(1);
-    return (
-      <Animated.View
-        style={{ transform: [{ scale }] }}
-        onTouchStart={() => (scale.value = withSpring(0.9))}
-        onTouchEnd={() => {
-          scale.value = withSpring(1);
-          onPress();
-        }}
-      >
-        {children}
-      </Animated.View>
-    );
-  };
+    const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onPress }) => {
+      const scale = useSharedValue(1);
+    
+      return (
+        <Animated.View>
+          {children}
+        </Animated.View>
+      );
+    };
 
   const renderBountyCard = ({ item }) => (
     <AnimatedButton onPress={() => console.log('Selected bounty:', item.id)}>
