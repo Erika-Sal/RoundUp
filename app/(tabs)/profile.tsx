@@ -79,7 +79,7 @@ export default function SheriffProfile() {
                 </View>
               </View>
               <View style={styles.userInfo}>
-                <Text style={styles.username}>Sheriff Johnson</Text>
+                <Text style={styles.username}>Sheriff Shreya</Text>
                 <View style={styles.trustedBadge}>
                   <Star size={24} color="#FFD700" fill="#FFD700" />
                   <Text style={styles.trustedText}>Most Trusted</Text>
