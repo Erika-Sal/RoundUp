@@ -1,8 +1,22 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ImageBackground, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
+import { Star, MapPin, Clock, DollarSign, ShieldCheck } from 'lucide-react-native';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import { useFonts, Rye_400Regular } from '@expo-google-fonts/rye';
 
 export default function WantedListScreen() {
-  // Sample bounty data
+  const [fontsLoaded] = useFonts({
+    Rye: Rye_400Regular,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#8B4513" />
+      </View>
+    );
+  }
+
   const bounties = [
     {
       id: '1',
@@ -12,6 +26,7 @@ export default function WantedListScreen() {
       location: 'Dusty Creek',
       posted: '2 hours ago',
       urgency: 'High',
+      sheriff: 'Sheriff Thompson'
     },
     {
       id: '2',
@@ -21,210 +36,247 @@ export default function WantedListScreen() {
       location: 'Eagle Pass',
       posted: '1 day ago',
       urgency: 'Medium',
+      sheriff: 'Sheriff Wilson'
     },
     {
       id: '3',
-      title: 'Ranch Hand Needed',
-      type: 'Assistance',
-      reward: '200',
-      location: 'Golden Valley',
-      posted: '3 days ago',
+      title: 'Missing Kid',
+      type: 'Kidnapping',
+      reward: '10',
+      location: 'Jester',
+      posted: '10 seconds ago',
       urgency: 'Low',
-    },
-    // Add more sample bounties as needed
+      sheriff: 'Sheriff Wilson'
+    }
   ];
 
+  const urgencyColors = {
+    High: '#D72638',
+    Medium: '#F7B801',
+    Low: '#4CAF50',
+  };
+
+  const AnimatedButton = ({ children, onPress }) => {
+    const scale = useSharedValue(1);
+    return (
+      <Animated.View
+        style={{ transform: [{ scale }] }}
+        onTouchStart={() => (scale.value = withSpring(0.9))}
+        onTouchEnd={() => {
+          scale.value = withSpring(1);
+          onPress();
+        }}
+      >
+        {children}
+      </Animated.View>
+    );
+  };
+
   const renderBountyCard = ({ item }) => (
-    <TouchableOpacity style={styles.card} onPress={() => console.log('Selected bounty:', item.id)}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.title}>{item.title}</Text>
-        <View style={[styles.urgencyBadge, 
-          item.urgency === 'High' ? styles.highUrgency :
-          item.urgency === 'Medium' ? styles.mediumUrgency :
-          styles.lowUrgency
-        ]}>
+    <AnimatedButton onPress={() => console.log('Selected bounty:', item.id)}>
+      <View style={styles.card}>
+        <View style={[styles.urgencyBadge, { backgroundColor: urgencyColors[item.urgency] }]}>
           <Text style={styles.urgencyText}>{item.urgency}</Text>
         </View>
-      </View>
 
-      <View style={styles.cardBody}>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Type:</Text>
-          <Text style={styles.value}>{item.type}</Text>
-        </View>
-        
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Location:</Text>
-          <Text style={styles.value}>{item.location}</Text>
+        <View style={styles.cardHeader}>
+          <View style={styles.rewardBadge}>
+            <DollarSign size={16} color="#8B4513" />
+            <Text style={styles.rewardText}>{item.reward}</Text>
+          </View>
         </View>
 
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Posted:</Text>
-          <Text style={styles.value}>{item.posted}</Text>
-        </View>
-      </View>
+        <View style={styles.cardContent}>
+          <Text style={styles.titleText}>{item.title}</Text>
 
-      <View style={styles.cardFooter}>
-        <Text style={styles.reward}>${item.reward} REWARD</Text>
-        <TouchableOpacity 
-          style={styles.acceptButton}
-          onPress={() => console.log('Accept bounty:', item.id)}
-        >
-          <Text style={styles.acceptButtonText}>ACCEPT</Text>
+          <View style={styles.detailRow}>
+            <MapPin size={16} color="#8B4513" />
+            <Text style={styles.locationText}>{item.location}</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Clock size={16} color="#8B4513" />
+            <Text style={styles.timeText}>{item.posted}</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <ShieldCheck size={16} color="#FFD700" />
+            <Text style={styles.sheriffText}>{item.sheriff}</Text>
+          </View>
+
+          <View style={styles.typeBadge}>
+            <Text style={styles.typeText}>{item.type}</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.acceptButton}>
+          <Text style={styles.acceptButtonText}>CLAIM BOUNTY</Text>
         </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </AnimatedButton>
   );
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>WANTED</Text>
+    <ImageBackground source={{ uri: 'https://live.staticflickr.com/44/167285658_08b8a344bd_h.jpg' }} style={styles.background}>
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>BOUNTY BOARD</Text>
+          <View style={styles.headerUnderline} />
+        </View>
+
+        <FlatList
+          data={bounties}
+          renderItem={renderBountyCard}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContainer}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
-
-      {/* Bounties List */}
-      <FlatList
-        data={bounties}
-        renderItem={renderBountyCard}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-      />
-
-      {/* Rope Elements */}
-      <View style={[styles.rope, styles.ropeLeft]} />
-      <View style={[styles.rope, styles.ropeRight]} />
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#FFF8E1', // amber-50 equivalent
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
-  header: {
-    width: '100%',
-    backgroundColor: '#8B4513', // brown color
-    borderRadius: 25,
-    padding: 16,
+  headerContainer: {
+    padding: 20,
     alignItems: 'center',
-    marginBottom: 16,
+    backgroundColor: '#8B4513',
+    borderBottomWidth: 4,
+    borderBottomColor: '#5C2C0C',
   },
   headerText: {
-    color: 'white',
-    fontSize: 28,
-    fontWeight: 'bold',
-    letterSpacing: 2,
+    fontFamily: 'Rye',
+    fontSize: 36,
+    color: '#FFF8DC',
+    textShadowColor: '#000',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+  },
+  headerUnderline: {
+    width: '60%',
+    height: 2,
+    backgroundColor: '#D4A867',
+    marginTop: 8,
   },
   listContainer: {
-    padding: 16,
-    gap: 16,
+    padding: 8,
+  },
+  row: {
+    justifyContent: 'space-between',
+    marginHorizontal: 8,
   },
   card: {
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255, 248, 220, 0.95)',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 16,
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: '#8B4513',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
-    flex: 1,
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 8,
+    position: 'relative',
+    width: Dimensions.get('window').width / 2 - 24,
+    marginBottom: 16,
   },
   urgencyBadge: {
-    paddingHorizontal: 12,
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
-    marginLeft: 8,
-  },
-  highUrgency: {
-    backgroundColor: '#DC2626',
-  },
-  mediumUrgency: {
-    backgroundColor: '#F59E0B',
-  },
-  lowUrgency: {
-    backgroundColor: '#10B981',
+    borderRadius: 8,
   },
   urgencyText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 12,
   },
-  cardBody: {
-    gap: 8,
-    marginBottom: 16,
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingBottom: 12,
   },
-  infoRow: {
+  rewardBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#F8E5D1',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#8B4513',
   },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#666',
-    width: 80,
-  },
-  value: {
-    fontSize: 16,
-    color: '#000',
-    flex: 1,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
-    paddingTop: 12,
-  },
-  reward: {
-    fontSize: 18,
+  rewardText: {
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#8B4513',
+    marginLeft: 4,
+  },
+  cardContent: {
+    gap: 8,
+  },
+  titleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#8B4513',
+    marginBottom: 8,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  locationText: {
+    fontSize: 14,
+    color: '#594433',
+    fontWeight: '600',
+    fontFamily: 'System',
+    letterSpacing: 0.5,
+  },
+  timeText: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
+  },
+  sheriffText: {
+    fontSize: 13,
+    color: '#8B4513',
+    fontWeight: '500',
+  },
+  typeBadge: {
+    backgroundColor: '#8B4513',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    marginTop: 8,
+  },
+  typeText: {
+    color: '#FFF8DC',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   acceptButton: {
     backgroundColor: '#8B4513',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 20,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 12,
   },
   acceptButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#FFF',
     fontSize: 14,
-  },
-  rope: {
-    position: 'absolute',
-    width: 4,
-    top: 0,
-    bottom: 0,
-    backgroundColor: '#8B4513',
-    opacity: 0.5,
-  },
-  ropeLeft: {
-    left: '10%',
-  },
-  ropeRight: {
-    right: '10%',
+    fontWeight: 'bold',
   },
 });

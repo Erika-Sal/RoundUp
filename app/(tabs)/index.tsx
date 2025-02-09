@@ -1,138 +1,244 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ImageBackground } from 'react-native';
+import { CircleDollarSign, Users, TrendingUp, ArrowRight } from 'lucide-react-native';
 
-export default function BountyHunterNav() {
-  const handleClick = (action) => {
-    console.log(`Navigating to: ${action}`);
-  };
+interface FeatureCardProps {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
 
-  const NavButton = ({ text }) => (
+interface ButtonProps {
+  text: string;
+  primary?: boolean;
+  icon?: LucideIcon;
+}
+
+export default function Homepage() {
+  const FeatureCard = ({ icon: Icon, title, description }: FeatureCardProps) => (
+    <View style={styles.featureCard}>
+      <View style={styles.iconContainer}>
+        <Icon style={styles.icon} />
+      </View>
+      <Text style={styles.featureTitle}>{title}</Text>
+      <Text style={styles.featureDescription}>{description}</Text>
+    </View>
+  );
+
+  const Button = ({ text, primary = false, icon: Icon }: ButtonProps) => (
     <TouchableOpacity 
-      style={styles.button}
-      onPress={() => handleClick(text)}
+      style={[styles.button, primary ? styles.primaryButton : styles.secondaryButton]}
+      onPress={() => console.log(`Clicked: ${text}`)}
     >
-      <Text style={styles.buttonText}>{text}</Text>
+      <Text style={[styles.buttonText, primary ? styles.primaryButtonText : styles.secondaryButtonText]}>
+        {text}
+      </Text>
+      {Icon && <Icon style={styles.buttonIcon} />}
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>HOME</Text>
-      </View>
+    <ScrollView style={styles.scrollView}>
+   <ImageBackground 
+      source={{ uri: 'https://live.staticflickr.com/44/167285658_08b8a344bd_h.jpg' }} 
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+        <View style={styles.container}>
+          {/* Hero Section */}
+          <View style={styles.heroSection}>
+            <View style={styles.heroContent}>
+              <Text style={styles.heroTitle}>RoundUp</Text>
+              <Text style={styles.heroSubtitle}>
+                Jump on the Bandwagon and RoundUp some help!
+              </Text>
+              <View style={styles.buttonGroup}>
+                <Button text="Saddle Up" primary />
+                <Button text="Scout Ahead" />
+              </View>
+            </View>
+          </View>
 
-      {/* Logo */}
-      <View style={styles.logoContainer}>
-        <View style={styles.logoCircle}>
-          <Svg width={80} height={80} viewBox="0 0 100 100">
-            <Path
-              d="M50 10 L90 40 L80 90 L20 90 L10 40 Z"
-              fill="black"
+          {/* Features Section */}
+          <View style={styles.featuresSection}>
+            <Text style={styles.sectionTitle}>Why Choose Round Up</Text>
+            <View style={styles.featuresGrid}>
+              <FeatureCard
+                icon={CircleDollarSign}
+                title="Post Bounty"
+                description="Need help with homework? Need a Group to Get Groceries With? Need a fake partner so you don't third wheel? Post a 'Bounty' for whatever you need."
+              />
+              <FeatureCard
+                icon={TrendingUp}
+                title="Become a Sheriff"
+                description="Help your fellow townspeople complete their tasks to level up your profile"
+              />
+            </View>
+          </View>
+
+          {/* CTA Section */}
+          <View style={styles.ctaSection}>
+            <Text style={styles.ctaTitle}>Round Up Help Today!</Text>
+            <Button 
+              text="Join the Posse" 
+              primary 
+              icon={ArrowRight}
             />
-            <Path
-              d="M30 40 L70 40 L65 70 L35 70 Z"
-              fill="tan"
-            />
-          </Svg>
+          </View>
         </View>
-      </View>
-
-      {/* Navigation Buttons */}
-      <View style={styles.buttonContainer}>
-        {['FIND BOUNTY', 'POST A BOUNTY', 'SEARCH USERS', 'MY PROFILE'].map((text) => (
-          <NavButton key={text} text={text} />
-        ))}
-      </View>
-
-      {/* Rope Elements */}
-      <View style={[styles.rope, styles.ropeLeft]} />
-      <View style={[styles.rope, styles.ropeRight]} />
-    </View>
+      </ImageBackground>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
-    backgroundColor: '#FFF8E1', // amber-50 equivalent
-    alignItems: 'center',
-    padding: 16,
   },
-  header: {
+  backgroundImage: {
+    flex: 1,
     width: '100%',
-    maxWidth: 400,
-    backgroundColor: '#795548', // brown-700 equivalent
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 24,
+  },
+  heroSection: {
+    paddingTop: 96,
+    paddingBottom: 128,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
-  headerText: {
-    color: 'white',
-    fontSize: 30,
+  heroContent: {
+    maxWidth: 960,
+    alignItems: 'center',
+  },
+  heroTitle: {
+    fontFamily: 'Rye',
+    fontSize: 48,
     fontWeight: 'bold',
-    letterSpacing: 2,
-  },
-  logoContainer: {
-    width: 160,
-    height: 160,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
+    color: '#8B4513',
+    textAlign: 'center',
     marginBottom: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.25)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
   },
-  logoCircle: {
-    width: 120,
-    height: 120,
-    backgroundColor: '#B45309', // amber-700 equivalent
-    borderRadius: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
+  heroSubtitle: {
+    fontFamily: 'Rye',
+    fontSize: 20,
+    color: '#463E3F',
+    textAlign: 'center',
+    marginBottom: 40,
+    maxWidth: 640,
   },
-  buttonContainer: {
-    width: '100%',
-    maxWidth: 400,
+  buttonGroup: {
+    flexDirection: 'row',
     gap: 16,
   },
   button: {
-    width: '100%',
-    backgroundColor: '#B45309', // amber-700 equivalent
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#78350F', // amber-900 equivalent
+    borderColor: '#8B4513',
+  },
+  primaryButton: {
+    backgroundColor: '#8B4513',
+  },
+  secondaryButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  },
+  buttonText: {
+    fontFamily: 'Rye',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+  },
+  secondaryButtonText: {
+    color: '#8B4513',
+  },
+  buttonIcon: {
+    marginLeft: 8,
+    width: 20,
+    height: 20,
+  },
+  featuresSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    paddingVertical: 96,
+    paddingHorizontal: 16,
+  },
+  sectionTitle: {
+    fontFamily: 'Rye',
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#8B4513',
+    textAlign: 'center',
+    marginBottom: 64,
+  },
+  featuresGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 48,
+    maxWidth: 1200,
+    marginHorizontal: 'auto',
+  },
+  featureCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 32,
+    borderRadius: 16,
+    width: 320,
+    borderWidth: 2,
+    borderColor: '#8B4513',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  buttonText: {
-    color: 'white',
+  iconContainer: {
+    width: 48,
+    height: 48,
+    backgroundColor: '#FDF5E6',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#8B4513',
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    color: '#8B4513',
+  },
+  featureTitle: {
+    fontFamily: 'Rye',
     fontSize: 20,
+    fontWeight: '600',
+    color: '#8B4513',
+    marginBottom: 16,
+  },
+  featureDescription: {
+    fontSize: 16,
+    color: '#463E3F',
+    lineHeight: 24,
+  },
+  ctaSection: {
+    paddingVertical: 96,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  ctaTitle: {
+    fontFamily: 'Rye',
+    fontSize: 36,
     fontWeight: 'bold',
+    color: '#8B4513',
     textAlign: 'center',
-    letterSpacing: 1,
-  },
-  rope: {
-    position: 'absolute',
-    width: 6,
-    top: 0,
-    bottom: 0,
-    backgroundColor: '#B45309', // amber-700 equivalent
-    opacity: 0.5,
-  },
-  ropeLeft: {
-    left: '35%',
-  },
-  ropeRight: {
-    right: '35%',
+    marginBottom: 24,
   },
 });

@@ -33,15 +33,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="wanted"
-        options={{
-          title: 'Wanted',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-text" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="post-bounty"
         options={{
           title: 'Post Bounty',
