@@ -29,33 +29,33 @@ export default function WantedListScreen() {
   const bounties: Bounty[] = [
     {
       id: '1',
-      title: 'Lost Cattle Recovery',
-      type: 'Recovery',
-      reward: '500',
-      location: 'Dusty Creek',
+      title: 'Need a Mentor',
+      type: 'Advice',
+      reward: '0',
+      location: 'Jester',
       posted: '2 hours ago',
-      urgency: 'High',
-      sheriff: 'Sheriff Thompson'
+      urgency: 'Low',
+      sheriff: 'Sheriff Diya'
     },
     {
       id: '2',
-      title: 'Missing Stagecoach',
+      title: 'Need Help Moving Out of Jester',
       type: 'Investigation',
-      reward: '1000',
+      reward: '20',
       location: 'Eagle Pass',
       posted: '1 day ago',
       urgency: 'Medium',
-      sheriff: 'Sheriff Wilson'
+      sheriff: 'Sheriff Tiffany'
     },
     {
       id: '3',
-      title: 'Missing Kid',
+      title: 'Food Pickup',
       type: 'Kidnapping',
       reward: '10',
-      location: 'Jester',
+      location: 'Chipotle',
       posted: '10 seconds ago',
-      urgency: 'Low',
-      sheriff: 'Sheriff Wilson'
+      urgency: 'High',
+      sheriff: 'Sheriff Carson'
     }
   ];
 
