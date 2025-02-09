@@ -10,8 +10,8 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "build": "expo export -p web",
-   "vercel-build": "expo export -p web --clear"
+    "build": "expo export -p web --output-dir web-build",
+    "vercel-build": "expo export -p web --output-dir web-build"
   },
   "jest": {
     "preset": "jest-expo"
