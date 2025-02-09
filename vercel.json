@@ -3,9 +3,9 @@
     "builds": [
       {
         "src": "package.json",
-        "use": "@vercel/static-build",
+        "use": "@vercel/node",
         "config": {
-          "distDir": "web-build"
+          "nodeVersion": "18.x"
         }
       }
     ],
