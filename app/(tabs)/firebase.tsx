@@ -12,8 +12,6 @@ const firebaseConfig = {
     measurementId: "G-9TS75F1KJJ"
   };
  
- 
- 
 
 console.log('Starting Firebase initialization...');
 

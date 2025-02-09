@@ -6,6 +6,20 @@ import { useFonts, Rye_400Regular } from '@expo-google-fonts/rye';
 import { getBounties, BountyData } from './firebase';
 import { useFocusEffect } from '@react-navigation/native';
 
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import MessagingScreen from './messaging';
+
+const Stack = createNativeStackNavigator();
+
+type RootStackParamList = {
+  WantedList: undefined;
+  Messaging: {
+    bountyTitle: string;
+    otherUser: string;
+  };
+};
+
 interface AnimatedButtonProps {
   children: React.ReactNode;
   onPress: () => void;
@@ -19,7 +33,6 @@ const urgencyColors = {
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onPress }) => {
   const scale = useSharedValue(1);
-  
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }]
@@ -48,7 +61,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onPress }) =>
   );
 };
 
-export default function WantedListScreen() {
+function WantedList({ navigation }: { navigation: NativeStackNavigationProp<RootStackParamList> }) {
   const [bounties, setBounties] = useState<BountyData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -93,7 +106,18 @@ export default function WantedListScreen() {
   );
 
   const renderBountyCard = ({ item }: { item: BountyData }) => (
-    <AnimatedButton onPress={() => console.log('Selected bounty:', item.id)}>
+    <AnimatedButton 
+      onPress={() => {
+        console.log('Navigating to Messaging with:', {
+          bountyTitle: item.title,
+          otherUser: item.sheriff
+        });
+        navigation.navigate('Messaging', {
+          bountyTitle: item.title,
+          otherUser: item.sheriff
+        });
+      }}
+    >
       <View style={styles.card}>
         <View style={[styles.urgencyBadge, { backgroundColor: urgencyColors[item.urgency] }]}>
           <Text style={styles.urgencyText}>{item.urgency}</Text>
@@ -127,9 +151,15 @@ export default function WantedListScreen() {
           </View>
         </View>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.acceptButton}
-          onPress={() => console.log('Claiming bounty:', item.id)}
+          onPress={() => {
+            console.log('Claiming bounty:', item.title);
+            navigation.navigate('Messaging', {
+              bountyTitle: item.title,
+              otherUser: item.sheriff
+            });
+          }}
         >
           <Text style={styles.acceptButtonText}>CLAIM BOUNTY</Text>
         </TouchableOpacity>
@@ -146,8 +176,8 @@ export default function WantedListScreen() {
   }
 
   return (
-    <ImageBackground 
-      source={{ uri: 'https://live.staticflickr.com/44/167285658_08b8a344bd_h.jpg' }} 
+    <ImageBackground
+      source={{ uri: 'https://live.staticflickr.com/44/167285658_08b8a344bd_h.jpg' }}
       style={styles.background}
     >
       <View style={styles.container}>
@@ -174,6 +204,15 @@ export default function WantedListScreen() {
         />
       </View>
     </ImageBackground>
+  );
+}
+
+export default function WantedListScreen() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="WantedList" component={WantedList} />
+      <Stack.Screen name="Messaging" component={MessagingScreen} />
+    </Stack.Navigator>
   );
 }
 
