@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, ImageBackground, StyleSheet, Ac
 import { Star, MapPin, Clock, DollarSign, ShieldCheck } from 'lucide-react-native';
 import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 import { useFonts, Rye_400Regular } from '@expo-google-fonts/rye';
-import { getBounties, BountyData } from './firebase';
+import { getBounties, BountyData } from '../utils/firebase';
 import { useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';

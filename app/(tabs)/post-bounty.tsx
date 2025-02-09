@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, ImageBackground, Dimensions, Alert } from 'react-native';
 import { useFonts, Rye_400Regular } from '@expo-google-fonts/rye';
 import { DollarSign, Send, AlertCircle } from 'lucide-react-native';
-import { addBounty } from './firebase';
+import { addBounty } from '../utils/firebase';
 import { useNavigation } from '@react-navigation/native';
 
 export default function PostBountyScreen() {
