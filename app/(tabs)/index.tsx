@@ -1,5 +1,7 @@
 // app/(tabs)/wanted.tsx
 import { View, Text, StyleSheet } from 'react-native';
+import { Dimensions } from 'react-native';
+
 
 export default function WantedScreen() {
   return (
