@@ -29,10 +29,6 @@ try {
   app = initializeApp(firebaseConfig);
   console.log('Firebase app initialized successfully');
   
-  // Add the new console.logs here
-  console.log('🔥 Firebase Project ID:', app?.options?.projectId);
-  console.log('🔥 Firebase Collection Path:', 'bounties');
-  
   db = getFirestore(app);
   console.log('Firestore initialized successfully');
 } catch (error) {

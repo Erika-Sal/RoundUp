@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ImageBackground, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ImageBackground, StyleSheet, ActivityIndicator, Dimensions, Alert } from 'react-native';
 import { Star, MapPin, Clock, DollarSign, ShieldCheck } from 'lucide-react-native';
 import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 import { useFonts, Rye_400Regular } from '@expo-google-fonts/rye';
@@ -10,6 +10,12 @@ interface AnimatedButtonProps {
   children: React.ReactNode;
   onPress: () => void;
 }
+
+const urgencyColors = {
+  High: '#D72638',
+  Medium: '#F7B801',
+  Low: '#4CAF50',
+};
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onPress }) => {
   const scale = useSharedValue(1);
@@ -45,44 +51,46 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onPress }) =>
 export default function WantedListScreen() {
   const [bounties, setBounties] = useState<BountyData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [fontsLoaded] = useFonts({
     Rye: Rye_400Regular,
   });
 
-  const urgencyColors = {
-    High: '#D72638',
-    Medium: '#F7B801',
-    Low: '#4CAF50',
-  };
-
   const fetchBounties = async () => {
+    console.log('🔄 Fetching bounties...');
+    setIsLoading(true);
     try {
       const fetchedBounties = await getBounties();
+      console.log('📥 Received bounties:', fetchedBounties);
       setBounties(fetchedBounties);
     } catch (error) {
-      console.error('Error fetching bounties:', error);
+      console.error('❌ Error fetching bounties:', error);
+      Alert.alert('Error', 'Failed to load bounties. Please try again.');
     } finally {
       setIsLoading(false);
+      setRefreshing(false);
     }
   };
 
-  // Refresh bounties when screen comes into focus
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchBounties();
+  }, []);
+
+  useEffect(() => {
+    console.log('🔄 Initial bounties fetch');
+    fetchBounties();
+  }, []);
+
   useFocusEffect(
     React.useCallback(() => {
+      console.log('📱 Screen focused, fetching bounties');
       fetchBounties();
+      return () => {
+        console.log('Screen unfocused');
+      };
     }, [])
   );
-
-  const formatTimeAgo = (timestamp: string) => {
-    const now = new Date();
-    const postedDate = new Date(timestamp);
-    const diffInSeconds = Math.floor((now.getTime() - postedDate.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-    return `${Math.floor(diffInSeconds / 86400)} days ago`;
-  };
 
   const renderBountyCard = ({ item }: { item: BountyData }) => (
     <AnimatedButton onPress={() => console.log('Selected bounty:', item.id)}>
@@ -107,7 +115,7 @@ export default function WantedListScreen() {
           </View>
           <View style={styles.detailRow}>
             <Clock size={16} color="#8B4513" />
-            <Text style={styles.timeText}>{formatTimeAgo(item.posted)}</Text>
+            <Text style={styles.timeText}>{item.posted}</Text>
           </View>
           <View style={styles.detailRow}>
             <ShieldCheck size={16} color="#FFD700" />
@@ -156,6 +164,13 @@ export default function WantedListScreen() {
           numColumns={2}
           columnWrapperStyle={styles.row}
           showsVerticalScrollIndicator={false}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No bounties available</Text>
+            </View>
+          )}
         />
       </View>
     </ImageBackground>
@@ -199,11 +214,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   listContainer: {
-    padding: 8,
+    padding: 16,
+    paddingBottom: 32,
   },
   row: {
     justifyContent: 'space-between',
-    marginHorizontal: 8,
+    marginBottom: 16,
+    paddingHorizontal: 8,
   },
   card: {
     backgroundColor: 'rgba(255, 248, 220, 0.95)',
@@ -257,12 +274,17 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     gap: 8,
+    backgroundColor: 'rgba(255, 248, 220, 0.95)',
+    borderRadius: 8,
+    padding: 12,
   },
   titleText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#8B4513',
     marginBottom: 8,
+    fontFamily: 'Rye',
+    textAlign: 'center',
   },
   detailRow: {
     flexDirection: 'row',
@@ -310,5 +332,20 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  emptyText: {
+    fontFamily: 'Rye',
+    fontSize: 18,
+    color: '#FFF8DC',
+    textAlign: 'center',
+    textShadowColor: '#000',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });
