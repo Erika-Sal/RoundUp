@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { CircleDollarSign, Users, TrendingUp, ArrowRight, LucideIcon } from 'lucide-react';
+import { Dimensions } from 'react-native';
 
 interface FeatureCardProps {
   icon: LucideIcon;
@@ -88,6 +89,7 @@ export default function Homepage() {
   );
 }
 
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
