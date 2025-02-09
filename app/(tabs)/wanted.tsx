@@ -1,63 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ImageBackground, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { Star, MapPin, Clock, DollarSign, ShieldCheck } from 'lucide-react-native';
-import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 import { useFonts, Rye_400Regular } from '@expo-google-fonts/rye';
-
-// Define interfaces for type safety
-interface Bounty {
-  id: string;
-  title: string;
-  type: string;
-  reward: string;
-  location: string;
-  posted: string;
-  urgency: 'High' | 'Medium' | 'Low';
-  sheriff: string;
-}
+import { getBounties, BountyData } from './firebase';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface AnimatedButtonProps {
   children: React.ReactNode;
   onPress: () => void;
 }
 
+const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onPress }) => {
+  const scale = useSharedValue(1);
+  
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }]
+    };
+  });
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.95);
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+    onPress();
+  };
+
+  return (
+    <Animated.View style={animatedStyle}>
+      <TouchableOpacity
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        activeOpacity={1}
+      >
+        {children}
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
+
 export default function WantedListScreen() {
+  const [bounties, setBounties] = useState<BountyData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [fontsLoaded] = useFonts({
     Rye: Rye_400Regular,
   });
-
-  const bounties: Bounty[] = [
-    {
-      id: '1',
-      title: 'Need a Mentor',
-      type: 'Advice',
-      reward: '0',
-      location: 'Jester',
-      posted: '2 hours ago',
-      urgency: 'Low',
-      sheriff: 'Sheriff Diya'
-    },
-    {
-      id: '2',
-      title: 'Need Help Moving Out of Jester',
-      type: 'Investigation',
-      reward: '20',
-      location: 'Eagle Pass',
-      posted: '1 day ago',
-      urgency: 'Medium',
-      sheriff: 'Sheriff Tiffany'
-    },
-    {
-      id: '3',
-      title: 'Food Pickup',
-      type: 'Kidnapping',
-      reward: '10',
-      location: 'Chipotle',
-      posted: '10 seconds ago',
-      urgency: 'High',
-      sheriff: 'Sheriff Carson'
-    }
-  ];
 
   const urgencyColors = {
     High: '#D72638',
@@ -65,24 +55,36 @@ export default function WantedListScreen() {
     Low: '#4CAF50',
   };
 
-  const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onPress }) => {
-    const scale = useSharedValue(1);
-    
-    return (
-      <Animated.View
-        style={[{ transform: [{ scale: scale.value }] }]}
-        onTouchStart={() => (scale.value = withSpring(0.95))}
-        onTouchEnd={() => {
-          scale.value = withSpring(1);
-          onPress();
-        }}
-      >
-        {children}
-      </Animated.View>
-    );
+  const fetchBounties = async () => {
+    try {
+      const fetchedBounties = await getBounties();
+      setBounties(fetchedBounties);
+    } catch (error) {
+      console.error('Error fetching bounties:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const renderBountyCard = ({ item }: { item: Bounty }) => (
+  // Refresh bounties when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchBounties();
+    }, [])
+  );
+
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const postedDate = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - postedDate.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  };
+
+  const renderBountyCard = ({ item }: { item: BountyData }) => (
     <AnimatedButton onPress={() => console.log('Selected bounty:', item.id)}>
       <View style={styles.card}>
         <View style={[styles.urgencyBadge, { backgroundColor: urgencyColors[item.urgency] }]}>
@@ -105,7 +107,7 @@ export default function WantedListScreen() {
           </View>
           <View style={styles.detailRow}>
             <Clock size={16} color="#8B4513" />
-            <Text style={styles.timeText}>{item.posted}</Text>
+            <Text style={styles.timeText}>{formatTimeAgo(item.posted)}</Text>
           </View>
           <View style={styles.detailRow}>
             <ShieldCheck size={16} color="#FFD700" />
@@ -127,7 +129,7 @@ export default function WantedListScreen() {
     </AnimatedButton>
   );
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#8B4513" />
@@ -149,7 +151,7 @@ export default function WantedListScreen() {
         <FlatList
           data={bounties}
           renderItem={renderBountyCard}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: BountyData) => item.id.toString()}
           contentContainerStyle={styles.listContainer}
           numColumns={2}
           columnWrapperStyle={styles.row}

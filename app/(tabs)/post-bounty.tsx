@@ -1,28 +1,81 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, ImageBackground, Dimensions, Alert } from 'react-native';
 import { useFonts, Rye_400Regular } from '@expo-google-fonts/rye';
 import { DollarSign, Send, AlertCircle } from 'lucide-react-native';
+import { addBounty } from './firebase';
+import { useNavigation } from '@react-navigation/native';
 
 export default function PostBountyScreen() {
   const [title, setTitle] = useState('');
-  const [type, setType] = useState('');
+  const [reward, setReward] = useState('');
   const [description, setDescription] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigation = useNavigation();
 
   const [fontsLoaded] = useFonts({
     Rye: Rye_400Regular,
   });
 
-  if (!fontsLoaded) {
+  const handleSubmit = async () => {
+    console.log('Submit button pressed');
+    console.log('Current values:', { title, reward, description });
+
+    if (!title || !description) {
+      console.log('Missing required fields');
+      Alert.alert('Missing Information', 'Please fill in all required fields');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      console.log('Attempting to add bounty to Firebase...');
+      const bountyData = {
+        title,
+        reward,
+        description,
+        type: 'General' as const,
+        location: 'Not specified' as const,
+        urgency: 'Medium' as const,
+        sheriff: 'Anonymous Sheriff' as const
+      };
+      
+      console.log('Bounty data to be submitted:', bountyData);
+      
+      const result = await addBounty(bountyData);
+      console.log('Bounty added successfully with ID:', result);
+      
+      Alert.alert(
+        'Success',
+        'Bounty posted successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              console.log('Clearing form and navigating back');
+              setTitle('');
+              setReward('');
+              setDescription('');
+              navigation.goBack();
+            }
+          }
+        ]
+      );
+    } catch (error: unknown) {
+      console.error('Error adding bounty:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      Alert.alert('Error', `Failed to post bounty. Please try again. ${errorMessage}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!fontsLoaded || isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#8B4513" />
       </View>
     );
   }
-
-  const handleSubmit = () => {
-    console.log('Submitting bounty:', { title, type, description });
-  };
 
   return (
     <ImageBackground 
@@ -70,8 +123,8 @@ export default function PostBountyScreen() {
                     </View>
                     <TextInput
                       style={[styles.input, styles.rewardInput, { height: 100 }]}
-                      value={type}
-                      onChangeText={setType}
+                      value={reward}
+                      onChangeText={setReward}
                       placeholder="Amount"
                       placeholderTextColor="rgba(139, 69, 19, 0.5)"
                       keyboardType="numeric"
